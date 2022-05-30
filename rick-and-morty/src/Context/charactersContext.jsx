@@ -1,26 +1,66 @@
 import { createContext, useEffect, useState } from "react";
 import Axios from 'axios'
 
-export const CharacterContext = createContext();
+export const CharactersContext = createContext();
 
-export const CharacterContextProvider = ({ children }) => {
+export const CharactersContextProvider = ({ children }) => {
   const [characters, setCharacters] = useState([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [pages, setPages] = useState(0);
+  const [actualPage, setActualPage] = useState(1);
+  const [prevPage, setPrevPage] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
 
   useEffect(() => {
     Axios.get("https://rickandmortyapi.com/api/character/")
       .then(response => {
         if (response.status === 200) {
-          const {results} = response.data;
+          const {info, results} = response.data;
           setCharacters(results);
+          setTotalResults(info.count);
+          setPages(info.pages);
+          setPrevPage(info.prev);
+          setNextPage(info.next);
         }
       })
     }, [])
 
+    const goToPage = (page, e) => {
+      const type = e.target.dataset.type;
+      switch (type) {
+        case "prev": 
+        setActualPage(actualPage - 1)
+        break;
+        case "next": 
+        setActualPage(actualPage + 1)
+        break;
+        default:
+          return;
+      }
+ 
+      Axios.get(page)
+      .then(response => {
+        if (response.status === 200) {
+          const {info, results} = response.data;
+          setCharacters(results);
+          setPrevPage(info.prev);
+          setNextPage(info.next);
+        }
+      })
+    }
+
     return (
-      <CharacterContext.Provider value={{
-        characters
+      <CharactersContext.Provider value={{
+        characters, 
+        totalResults,
+        pages,
+        actualPage,
+        prevPage,
+        nextPage,
+        goToPage,
+
       }}>
         {children}
-      </CharacterContext.Provider>
+      </CharactersContext.Provider>
     )
   }
