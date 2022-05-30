@@ -25,18 +25,23 @@ export const CharactersContextProvider = ({ children }) => {
       })
     }, [])
 
-    const goToPage = (page, e) => {
-      const type = e.target.dataset.type;
-      switch (type) {
-        case "prev": 
+  const goToPage = (page, e) => {
+    const type = e.target.dataset.type;
+    switch (type) {
+      case "prev":
         setActualPage(actualPage - 1)
         break;
-        case "next": 
+      case "next":
         setActualPage(actualPage + 1)
         break;
-        default:
-          return;
-      }
+      case "goTo":
+        const number = Number(e.target.value)
+        page = `https://rickandmortyapi.com/api/character/?page=${number}`
+        setActualPage(number)
+        break;
+      default:
+        return;
+    }
  
       Axios.get(page)
       .then(response => {
@@ -58,7 +63,6 @@ export const CharactersContextProvider = ({ children }) => {
         prevPage,
         nextPage,
         goToPage,
-
       }}>
         {children}
       </CharactersContext.Provider>

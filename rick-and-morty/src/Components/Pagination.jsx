@@ -14,8 +14,17 @@ export const Pagination = () => {
       </div>
       <div className="col-3 d-flex align-items-center">
         <b>Go to page: </b>
-        <select name="goTo" className="form-select w-auto mx-1">
-          <option value="1">1</option>
+        <select name="goTo" 
+          className="form-select w-auto mx-1"
+          value={actualPage}
+          onChange={e => goToPage("", e)}
+          data-type="goTo"
+         > 
+        {
+          Array.from(Array(pages).keys()).map((page, idx) => {
+          return <option value={page + 1} key={idx}>{page +1}</option>
+          })
+        }
         </select>
       </div>
       <div className="col-3 text-end">
